@@ -1,0 +1,18 @@
+<h1>Tickets</h1>
+
+<a href="{{ path('ticket_create') }}">Créer un ticket</a>
+
+<ul>
+    {% for ticket in tickets %}
+        <li>
+            {{ ticket.title }} -
+            {{ ticket.status.value }}
+
+            {% if ticket.status.value != 'closed' %}
+                <form action="{{ path('ticket_close', {id: ticket.id}) }}" method="post" style="display:inline;">
+                    <button type="submit">Close</button>
+                </form>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
