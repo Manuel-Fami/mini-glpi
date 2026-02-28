@@ -6,6 +6,7 @@ use App\Enum\TicketStatus;
 use App\Repository\TicketRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TicketRepository::class)]
 class Ticket
@@ -16,12 +17,18 @@ class Ticket
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le titre est obligatoire.')]
+    #[Assert\Length(min: 3, max: 255, minMessage: 'Le titre doit faire au moins 3 caractères.')]
     private string $title;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: 'La description est obligatoire.')]
+    #[Assert\Length(min: 10, minMessage: 'La description doit faire au moins 10 caractères.')]
     private string $description;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'La priorité est obligatoire.')]
+    #[Assert\Choice(choices: ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'], message: 'Priorité invalide.')]
     private string $priority;
 
     #[ORM\Column]

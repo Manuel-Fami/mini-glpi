@@ -31,6 +31,11 @@ class TicketService
         return $ticket;
     }
 
+    public function update(Ticket $ticket): void
+    {
+        $this->em->flush();
+    }
+
     public function assign(Ticket $ticket, User $user): void
     {
         if ($ticket->getAssignedTo() !== null) {
