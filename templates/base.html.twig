@@ -10,19 +10,32 @@
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body>
+    <body class="min-h-screen bg-gray-50 text-gray-900">
+
         {% if app.user %}
-            <nav class="navbar">
-                <a href="{{ path('ticket_list') }}" class="navbar-brand">Mini GLPI</a>
-                <div class="navbar-user">
-                    <span>{{ app.user.userIdentifier }}</span>
-                    <a href="{{ path('app_logout') }}" class="btn btn-logout">Déconnexion</a>
+        <nav class="bg-white border-b border-gray-200 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <a href="{{ path('ticket_list') }}" class="text-xl font-bold text-blue-600 tracking-tight">
+                        Mini GLPI
+                    </a>
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-gray-500">
+                            {{ app.user.userIdentifier }}
+                        </span>
+                        <a href="{{ path('app_logout') }}"
+                           class="text-sm px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 transition">
+                            Déconnexion
+                        </a>
+                    </div>
                 </div>
-            </nav>
+            </div>
+        </nav>
         {% endif %}
 
-        <main class="main-content">
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {% block body %}{% endblock %}
         </main>
+
     </body>
 </html>
