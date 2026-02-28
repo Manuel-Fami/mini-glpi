@@ -150,3 +150,4 @@ Jour 2 – Propreté & Front:
 - [ ] Vue.js changement statut
 - [ ] SCSS structuré
 - [ ] README propre
+
