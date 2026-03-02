@@ -44,4 +44,10 @@ class DocsController extends AbstractController
     {
         return $this->render('docs/cypress.html.twig');
     }
+
+    #[Route('/docker', name: 'app_docs_docker', methods: ['GET'])]
+    public function docker(): Response
+    {
+        return $this->render('docs/docker.html.twig');
+    }
 }

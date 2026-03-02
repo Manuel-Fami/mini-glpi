@@ -1,0 +1,21 @@
+# Surcharges pour l'environnement de développement local.
+# Ce fichier est automatiquement chargé par docker-compose.
+# Ne pas committer de secrets ici.
+
+services:
+
+  app:
+    build:
+      target: ""   # utilise l'image complète (pas de stage multi-step en dev)
+    environment:
+      APP_ENV: dev
+      DATABASE_URL: "mysql://app:app_password@database:3306/mini_glpi?serverVersion=8.0&charset=utf8mb4"
+    volumes:
+      # Monte le code source pour le rechargement à chaud
+      - .:/app
+      # Préserve le dossier vendor installé dans l'image
+      - /app/vendor
+      # Préserve le cache généré dans le conteneur
+      - /app/var
+    ports:
+      - "8000:80"

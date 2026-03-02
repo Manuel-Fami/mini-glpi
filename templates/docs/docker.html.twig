@@ -1,0 +1,259 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Docker — Documentation — Mini GLPI{% endblock %}
+
+{% block body %}
+
+<div class="mb-6">
+    <a href="{{ path('app_docs') }}" class="text-sm text-gray-500 hover:text-gray-700">← Documentation</a>
+    <h1 class="text-2xl font-bold text-gray-900 mt-2">Docker</h1>
+    <p class="text-sm text-gray-500 mt-1">Conteneurisation avec FrankenPHP et MySQL</p>
+</div>
+
+<div class="space-y-6 max-w-3xl">
+
+    {# ---------------------------------------------------------------- #}
+    {# Pourquoi Docker #}
+    {# ---------------------------------------------------------------- #}
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-3">Pourquoi Docker ?</h2>
+        <p class="text-sm text-gray-600 mb-4">
+            Docker encapsule l'application et ses dépendances dans des conteneurs isolés. Le projet tourne
+            de façon identique sur n'importe quelle machine, sans avoir à installer PHP, MySQL ou Caddy localement.
+        </p>
+        <div class="grid grid-cols-2 gap-3 text-xs">
+            <div class="p-3 bg-gray-50 rounded-lg">
+                <p class="font-semibold text-gray-700 mb-2">Sans Docker</p>
+                <ul class="space-y-1 text-gray-500">
+                    <li>✗ Installation PHP + extensions manuelles</li>
+                    <li>✗ MySQL local à configurer</li>
+                    <li>✗ Versions différentes selon le poste</li>
+                    <li>✗ Conflits avec d'autres projets</li>
+                </ul>
+            </div>
+            <div class="p-3 bg-blue-50 rounded-lg">
+                <p class="font-semibold text-blue-700 mb-2">Avec Docker</p>
+                <ul class="space-y-1 text-blue-600">
+                    <li>✓ <code>docker compose up</code> suffit</li>
+                    <li>✓ Environnement identique partout</li>
+                    <li>✓ Isolation complète des services</li>
+                    <li>✓ Prêt pour un déploiement en production</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {# ---------------------------------------------------------------- #}
+    {# Stack #}
+    {# ---------------------------------------------------------------- #}
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-4">Stack utilisée</h2>
+        <div class="space-y-3">
+            <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                <div class="p-1.5 bg-blue-100 rounded shrink-0">
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-gray-800">FrankenPHP</p>
+                    <p class="text-xs text-gray-500 mt-0.5">
+                        Serveur PHP recommandé par Symfony. Intègre Caddy (HTTP/2, TLS automatique) et PHP dans un seul binaire.
+                        Plus simple et plus rapide qu'Apache + mod_php ou Nginx + PHP-FPM.
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                <div class="p-1.5 bg-orange-100 rounded shrink-0">
+                    <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-gray-800">MySQL 8.0</p>
+                    <p class="text-xs text-gray-500 mt-0.5">
+                        Base de données relationnelle. Les données sont persistées dans un volume Docker nommé
+                        (<code class="bg-white px-1 rounded border border-gray-200">db_data</code>) — elles survivent aux redémarrages des conteneurs.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# ---------------------------------------------------------------- #}
+    {# Structure des fichiers #}
+    {# ---------------------------------------------------------------- #}
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-4">Structure des fichiers</h2>
+        <pre class="bg-gray-900 text-green-400 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto">mini-glpi/
+├── Dockerfile                  ← image de l'application (FrankenPHP)
+├── docker-compose.yml          ← services prod (app + database)
+├── docker-compose.override.yml ← surcharges dev (volume, port 8000)
+└── .dockerignore               ← fichiers exclus du build</pre>
+    </div>
+
+    {# ---------------------------------------------------------------- #}
+    {# Dockerfile #}
+    {# ---------------------------------------------------------------- #}
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-3">
+            <code class="text-blue-600 text-sm">Dockerfile</code>
+        </h2>
+        <p class="text-sm text-gray-600 mb-4">
+            Construit l'image de l'application en deux étapes (<em>multi-stage build</em>) pour garder
+            une image finale légère.
+        </p>
+        <div class="space-y-3">
+            <div class="p-3 bg-gray-50 rounded-lg">
+                <p class="text-xs font-semibold text-gray-700 mb-1">Étape 1 — <code>vendor</code></p>
+                <p class="text-xs text-gray-500">
+                    Utilise l'image <code>composer:2</code> pour installer les dépendances PHP sans les packages de développement
+                    (<code>--no-dev --optimize-autoloader</code>). Cette étape est mise en cache et ne se relance que si
+                    <code>composer.json</code> ou <code>composer.lock</code> changent.
+                </p>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-lg">
+                <p class="text-xs font-semibold text-gray-700 mb-1">Étape 2 — Image finale</p>
+                <p class="text-xs text-gray-500">
+                    Basée sur <code>dunglas/frankenphp:latest-php8.4</code>. Installe les extensions PHP nécessaires
+                    (<code>pdo_mysql</code>, <code>intl</code>, <code>zip</code>, <code>opcache</code>, <code>sodium</code>),
+                    copie le code et le dossier <code>vendor/</code>, compile les assets Symfony et préchauffe le cache prod.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {# ---------------------------------------------------------------- #}
+    {# docker-compose #}
+    {# ---------------------------------------------------------------- #}
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-4">
+            <code class="text-blue-600 text-sm">docker-compose.yml</code>
+            <span class="ml-2 text-xs font-normal text-gray-400">2 services</span>
+        </h2>
+        <div class="space-y-3">
+            <div class="p-3 bg-gray-50 rounded-lg">
+                <p class="text-xs font-semibold text-gray-700 mb-1">Service <code>app</code></p>
+                <ul class="text-xs text-gray-500 space-y-1">
+                    <li>• Image construite depuis le <code>Dockerfile</code> local</li>
+                    <li>• Port 80 exposé (prod)</li>
+                    <li>• <code>DATABASE_URL</code> pointe vers le service <code>database</code> (pas <code>127.0.0.1</code>)</li>
+                    <li>• Démarre seulement quand MySQL est prêt (<code>depends_on + healthcheck</code>)</li>
+                </ul>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-lg">
+                <p class="text-xs font-semibold text-gray-700 mb-1">Service <code>database</code></p>
+                <ul class="text-xs text-gray-500 space-y-1">
+                    <li>• Image officielle <code>mysql:8.0</code></li>
+                    <li>• Données persistées dans le volume <code>db_data</code></li>
+                    <li>• Healthcheck : <code>mysqladmin ping</code> toutes les 10 secondes</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {# ---------------------------------------------------------------- #}
+    {# Override dev #}
+    {# ---------------------------------------------------------------- #}
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-3">
+            <code class="text-blue-600 text-sm">docker-compose.override.yml</code>
+            <span class="ml-2 text-xs font-normal text-gray-400">surcharges dev</span>
+        </h2>
+        <p class="text-sm text-gray-600 mb-3">
+            Chargé <strong>automatiquement</strong> par docker-compose en développement. Remplace certaines valeurs
+            du fichier principal sans le modifier.
+        </p>
+        <ul class="text-xs text-gray-500 space-y-1.5">
+            <li>• <code>APP_ENV=dev</code> — active le mode debug Symfony</li>
+            <li>• Port <strong>8000</strong> exposé (pour ne pas entrer en conflit avec un service local sur le port 80)</li>
+            <li>• <strong>Volume du code source monté</strong> — toute modification d'un fichier PHP ou Twig est immédiatement visible
+                sans reconstruire l'image</li>
+            <li>• Les dossiers <code>vendor/</code> et <code>var/</code> sont exclus du montage pour utiliser
+                ceux de l'image (plus rapide)</li>
+        </ul>
+    </div>
+
+    {# ---------------------------------------------------------------- #}
+    {# Variables d'environnement #}
+    {# ---------------------------------------------------------------- #}
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-3">Variables d'environnement</h2>
+        <p class="text-sm text-gray-600 mb-3">
+            Les variables définies dans <code>docker-compose.yml</code> ont priorité sur le fichier <code>.env</code>.
+            Le <code>.env</code> local (avec <code>127.0.0.1:3306</code>) reste donc intact pour travailler sans Docker.
+        </p>
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+                <thead>
+                    <tr class="border-b border-gray-100">
+                        <th class="text-left font-semibold text-gray-600 pb-2 pr-4">Variable</th>
+                        <th class="text-left font-semibold text-gray-600 pb-2 pr-4">Dev (override)</th>
+                        <th class="text-left font-semibold text-gray-600 pb-2">Prod</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-500 space-y-1">
+                    <tr class="border-b border-gray-50">
+                        <td class="py-1.5 pr-4 font-mono">APP_ENV</td>
+                        <td class="py-1.5 pr-4">dev</td>
+                        <td class="py-1.5">prod</td>
+                    </tr>
+                    <tr class="border-b border-gray-50">
+                        <td class="py-1.5 pr-4 font-mono">DATABASE_URL</td>
+                        <td class="py-1.5 pr-4 font-mono">mysql://app:…@database:3306/…</td>
+                        <td class="py-1.5 font-mono">mysql://app:…@database:3306/…</td>
+                    </tr>
+                    <tr>
+                        <td class="py-1.5 pr-4 font-mono">APP_SECRET</td>
+                        <td class="py-1.5 pr-4">via <code>.env.local</code></td>
+                        <td class="py-1.5">variable d'environnement système</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {# ---------------------------------------------------------------- #}
+    {# Commandes #}
+    {# ---------------------------------------------------------------- #}
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-4">Commandes</h2>
+        <div class="space-y-3 font-mono">
+            <div class="p-3 bg-gray-900 text-green-400 rounded-lg text-xs">
+                <p class="text-gray-500 mb-1"># Démarrer (build automatique si nécessaire)</p>
+                <p>docker compose up --build</p>
+            </div>
+            <div class="p-3 bg-gray-900 text-green-400 rounded-lg text-xs">
+                <p class="text-gray-500 mb-1"># Jouer les migrations Doctrine</p>
+                <p>docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction</p>
+            </div>
+            <div class="p-3 bg-gray-900 text-green-400 rounded-lg text-xs">
+                <p class="text-gray-500 mb-1"># Charger les fixtures (données de démo)</p>
+                <p>docker compose exec app php bin/console doctrine:fixtures:load --no-interaction</p>
+            </div>
+            <div class="p-3 bg-gray-900 text-green-400 rounded-lg text-xs">
+                <p class="text-gray-500 mb-1"># Ouvrir un shell dans le conteneur</p>
+                <p>docker compose exec app sh</p>
+            </div>
+            <div class="p-3 bg-gray-900 text-green-400 rounded-lg text-xs">
+                <p class="text-gray-500 mb-1"># Arrêter les conteneurs</p>
+                <p>docker compose down</p>
+            </div>
+            <div class="p-3 bg-gray-900 text-green-400 rounded-lg text-xs">
+                <p class="text-gray-500 mb-1"># Supprimer aussi les volumes (⚠ efface la base de données)</p>
+                <p>docker compose down -v</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
