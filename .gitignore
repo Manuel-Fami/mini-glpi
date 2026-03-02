@@ -18,3 +18,9 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+###> cypress ###
+/node_modules/
+/cypress/videos/
+/cypress/screenshots/
+###< cypress ###

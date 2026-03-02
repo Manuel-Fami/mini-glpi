@@ -1,0 +1,11 @@
+{
+    "name": "mini-glpi-e2e",
+    "private": true,
+    "scripts": {
+        "cypress:open": "cypress open",
+        "cypress:run": "cypress run"
+    },
+    "devDependencies": {
+        "cypress": "^14.0.0"
+    }
+}
