@@ -26,18 +26,61 @@
             pour éviter toute dépendance à la base de données.
         </p>
         <div class="space-y-3">
+
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">create()</p>
+
             <div class="p-3 bg-gray-50 rounded-lg text-sm">
                 <p class="font-medium text-gray-800 font-mono text-xs">testCreateTicketSetsCorrectProperties()</p>
                 <p class="text-gray-500 mt-1">Vérifie qu'un ticket créé possède les bonnes propriétés et le statut initial <strong>OPEN</strong>.</p>
             </div>
+
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider pt-1">startProgress()</p>
+
             <div class="p-3 bg-gray-50 rounded-lg text-sm">
                 <p class="font-medium text-gray-800 font-mono text-xs">testStartProgressChangesStatusToInProgress()</p>
                 <p class="text-gray-500 mt-1">Vérifie la transition <strong>OPEN → IN_PROGRESS</strong>.</p>
             </div>
             <div class="p-3 bg-gray-50 rounded-lg text-sm">
+                <p class="font-medium text-gray-800 font-mono text-xs">testStartProgressOnNonOpenTicketThrowsLogicException()</p>
+                <p class="text-gray-500 mt-1">Vérifie qu'une <code class="bg-white px-1 rounded border border-gray-200">LogicException</code> est levée si le ticket n'est pas <strong>OPEN</strong>, et que <code class="bg-white px-1 rounded border border-gray-200">flush</code> n'est jamais appelé.</p>
+            </div>
+
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider pt-1">close()</p>
+
+            <div class="p-3 bg-gray-50 rounded-lg text-sm">
+                <p class="font-medium text-gray-800 font-mono text-xs">testCloseOpenTicketChangesStatusToClosed()</p>
+                <p class="text-gray-500 mt-1">Vérifie la transition <strong>OPEN → CLOSED</strong>.</p>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-lg text-sm">
                 <p class="font-medium text-gray-800 font-mono text-xs">testCloseAlreadyClosedTicketThrowsLogicException()</p>
                 <p class="text-gray-500 mt-1">Vérifie qu'une <code class="bg-white px-1 rounded border border-gray-200">LogicException</code> est levée si on tente de fermer un ticket déjà fermé.</p>
             </div>
+
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider pt-1">reopen()</p>
+
+            <div class="p-3 bg-gray-50 rounded-lg text-sm">
+                <p class="font-medium text-gray-800 font-mono text-xs">testReopenClosedTicketChangesStatusToOpen()</p>
+                <p class="text-gray-500 mt-1">Vérifie la transition <strong>CLOSED → OPEN</strong>.</p>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-lg text-sm">
+                <p class="font-medium text-gray-800 font-mono text-xs">testReopenNonClosedTicketThrowsLogicException()</p>
+                <p class="text-gray-500 mt-1">Vérifie qu'une <code class="bg-white px-1 rounded border border-gray-200">LogicException</code> est levée si le ticket n'est pas <strong>CLOSED</strong>, et que <code class="bg-white px-1 rounded border border-gray-200">flush</code> n'est jamais appelé.</p>
+            </div>
+
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider pt-1">assign()</p>
+
+            <div class="p-3 bg-gray-50 rounded-lg text-sm">
+                <p class="font-medium text-gray-800 font-mono text-xs">testAssignSetsAssignedToUser()</p>
+                <p class="text-gray-500 mt-1">Vérifie que <code class="bg-white px-1 rounded border border-gray-200">assignedTo</code> est correctement défini sur le ticket.</p>
+            </div>
+
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider pt-1">addComment()</p>
+
+            <div class="p-3 bg-gray-50 rounded-lg text-sm">
+                <p class="font-medium text-gray-800 font-mono text-xs">testAddCommentCreatesCommentWithCorrectProperties()</p>
+                <p class="text-gray-500 mt-1">Vérifie que le commentaire créé a le bon contenu, le bon auteur et le bon ticket associé.</p>
+            </div>
+
         </div>
     </div>
 
@@ -46,16 +89,50 @@
         <p class="text-sm text-gray-600 mb-4">
             Utilisent <code class="bg-gray-100 px-1 rounded text-xs">WebTestCase</code> pour simuler des requêtes HTTP réelles avec routage,
             sécurité et rendu Twig. Les fixtures sont chargées en environnement <code class="bg-gray-100 px-1 rounded text-xs">test</code>.
+            Des helpers internes (<code class="bg-gray-100 px-1 rounded text-xs">loginAs</code>, <code class="bg-gray-100 px-1 rounded text-xs">createOpenTicket</code>, <code class="bg-gray-100 px-1 rounded text-xs">createClosedTicket</code>) évitent la duplication entre les tests.
         </p>
         <div class="space-y-3">
+
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Accès & navigation</p>
+
             <div class="p-3 bg-gray-50 rounded-lg text-sm">
                 <p class="font-medium text-gray-800 font-mono text-xs">testUnauthenticatedAccessRedirectsToLogin()</p>
                 <p class="text-gray-500 mt-1">Vérifie qu'un accès non authentifié sur <code class="bg-white px-1 rounded border border-gray-200">GET /tickets</code> redirige vers <code class="bg-white px-1 rounded border border-gray-200">/login</code>.</p>
             </div>
             <div class="p-3 bg-gray-50 rounded-lg text-sm">
+                <p class="font-medium text-gray-800 font-mono text-xs">testAuthenticatedUserCanViewTicketDetail()</p>
+                <p class="text-gray-500 mt-1">Vérifie qu'un utilisateur connecté peut accéder à la page de détail d'un ticket.</p>
+            </div>
+
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider pt-1">Création & modification</p>
+
+            <div class="p-3 bg-gray-50 rounded-lg text-sm">
                 <p class="font-medium text-gray-800 font-mono text-xs">testCreateTicketViaHttp()</p>
                 <p class="text-gray-500 mt-1">Vérifie le flux complet : connexion, soumission du formulaire, redirection et apparition du ticket dans la liste.</p>
             </div>
+            <div class="p-3 bg-gray-50 rounded-lg text-sm">
+                <p class="font-medium text-gray-800 font-mono text-xs">testEditClosedTicketRedirectsWithError()</p>
+                <p class="text-gray-500 mt-1">Vérifie qu'accéder à <code class="bg-white px-1 rounded border border-gray-200">GET /tickets/{id}/edit</code> sur un ticket fermé redirige avec un message d'erreur.</p>
+            </div>
+
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider pt-1">Commentaires</p>
+
+            <div class="p-3 bg-gray-50 rounded-lg text-sm">
+                <p class="font-medium text-gray-800 font-mono text-xs">testUserCannotCommentOnTicketNotAssignedToThem()</p>
+                <p class="text-gray-500 mt-1">Vérifie qu'un <strong>ROLE_USER</strong> non assigné au ticket ne peut pas poster de commentaire — redirection avec message d'erreur.</p>
+            </div>
+
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider pt-1">Changement de statut</p>
+
+            <div class="p-3 bg-gray-50 rounded-lg text-sm">
+                <p class="font-medium text-gray-800 font-mono text-xs">testUserCannotReopenTicket()</p>
+                <p class="text-gray-500 mt-1">Vérifie qu'un <strong>ROLE_USER</strong> reçoit une réponse <code class="bg-white px-1 rounded border border-gray-200">403</code> JSON en tentant de réouvrir un ticket.</p>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-lg text-sm">
+                <p class="font-medium text-gray-800 font-mono text-xs">testTechCanReopenClosedTicket()</p>
+                <p class="text-gray-500 mt-1">Vérifie qu'un <strong>ROLE_TECH</strong> peut réouvrir un ticket fermé — réponse JSON <code class="bg-white px-1 rounded border border-gray-200">200</code> avec <code class="bg-white px-1 rounded border border-gray-200">status: "open"</code>.</p>
+            </div>
+
         </div>
     </div>
 
