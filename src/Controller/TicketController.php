@@ -105,10 +105,15 @@ class TicketController extends AbstractController
 
         $newStatus = $request->request->getString('status');
 
+        if ($newStatus === 'open' && !$this->isGranted('ROLE_TECH')) {
+            return $this->json(['error' => 'Action non autorisée.'], Response::HTTP_FORBIDDEN);
+        }
+
         try {
             match ($newStatus) {
                 'in_progress' => $service->startProgress($ticket),
                 'closed'      => $service->close($ticket),
+                'open'        => $service->reopen($ticket),
                 default       => throw new \InvalidArgumentException('Statut inconnu.'),
             };
         } catch (\LogicException | \InvalidArgumentException $e) {

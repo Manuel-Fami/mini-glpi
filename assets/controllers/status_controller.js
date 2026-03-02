@@ -9,14 +9,17 @@ import { Controller } from '@hotwired/stimulus';
  *   data-status-token-value="..."
  *
  * Targets :
- *   badge   → le badge de statut affiché dans la sidebar
- *   start   → bouton "Démarrer" (OPEN → IN_PROGRESS)
- *   close   → bouton "Fermer"   (→ CLOSED)
- *   modify  → lien "Modifier"   (masqué quand CLOSED)
- *   error   → zone d'affichage des erreurs
+ *   badge        → le badge de statut affiché dans la sidebar
+ *   start        → bouton "Démarrer" (OPEN → IN_PROGRESS)
+ *   close        → bouton "Fermer"   (→ CLOSED)
+ *   reopen       → bouton "Réouvrir" (CLOSED → OPEN, ROLE_TECH uniquement)
+ *   modify       → lien "Modifier"   (masqué quand CLOSED)
+ *   error        → zone d'affichage des erreurs AJAX
+ *   modal        → overlay de la modale de confirmation
+ *   modalMessage → texte de la modale
  */
 export default class extends Controller {
-    static targets = ['badge', 'start', 'close', 'modify', 'error'];
+    static targets = ['badge', 'start', 'close', 'reopen', 'modify', 'error', 'modal', 'modalMessage'];
     static values  = { url: String, token: String };
 
     async start() {
@@ -24,7 +27,39 @@ export default class extends Controller {
     }
 
     async close() {
+        const confirmed = await this.showConfirm('Êtes-vous sûr de vouloir fermer ce ticket ?');
+        if (!confirmed) return;
         await this.changeStatus('closed');
+    }
+
+    async reopen() {
+        const confirmed = await this.showConfirm('Êtes-vous sûr de vouloir réouvrir ce ticket ?');
+        if (!confirmed) return;
+        await this.changeStatus('open');
+    }
+
+    confirmModal() {
+        this.modalTarget.classList.add('hidden');
+        if (this._confirmResolve) {
+            this._confirmResolve(true);
+            this._confirmResolve = null;
+        }
+    }
+
+    cancelModal() {
+        this.modalTarget.classList.add('hidden');
+        if (this._confirmResolve) {
+            this._confirmResolve(false);
+            this._confirmResolve = null;
+        }
+    }
+
+    showConfirm(message) {
+        this.modalMessageTarget.textContent = message;
+        this.modalTarget.classList.remove('hidden');
+        return new Promise((resolve) => {
+            this._confirmResolve = resolve;
+        });
     }
 
     async changeStatus(status) {
@@ -75,6 +110,9 @@ export default class extends Controller {
         }
         if (this.hasCloseTarget) {
             this.closeTarget.classList.toggle('hidden', status === 'closed');
+        }
+        if (this.hasReopenTarget) {
+            this.reopenTarget.classList.toggle('hidden', status !== 'closed');
         }
         if (this.hasModifyTarget) {
             this.modifyTarget.classList.toggle('hidden', status === 'closed');

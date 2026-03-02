@@ -61,4 +61,14 @@ class TicketService
         $ticket->setStatus(TicketStatus::CLOSED);
         $this->em->flush();
     }
+
+    public function reopen(Ticket $ticket): void
+    {
+        if ($ticket->getStatus() !== TicketStatus::CLOSED) {
+            throw new \LogicException('Only closed tickets can be reopened.');
+        }
+
+        $ticket->setStatus(TicketStatus::OPEN);
+        $this->em->flush();
+    }
 }
