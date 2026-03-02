@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Enum\TicketStatus;
 use App\Repository\TicketRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -44,10 +46,15 @@ class Ticket
     #[ORM\ManyToOne]
     private ?User $assignedTo = null;
 
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'ticket', cascade: ['remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['createdAt' => 'ASC'])]
+    private Collection $comments;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->status = TicketStatus::OPEN;
+        $this->comments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -124,5 +131,13 @@ class Ticket
     {
         $this->assignedTo = $assignedTo;
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
     }
 }

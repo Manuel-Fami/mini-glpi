@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Comment;
 use App\Entity\Ticket;
 use App\Entity\User;
 use App\Enum\TicketStatus;
@@ -60,6 +61,19 @@ class TicketService
 
         $ticket->setStatus(TicketStatus::CLOSED);
         $this->em->flush();
+    }
+
+    public function addComment(Ticket $ticket, User $author, string $content): Comment
+    {
+        $comment = new Comment();
+        $comment->setContent($content);
+        $comment->setAuthor($author);
+        $comment->setTicket($ticket);
+
+        $this->em->persist($comment);
+        $this->em->flush();
+
+        return $comment;
     }
 
     public function reopen(Ticket $ticket): void

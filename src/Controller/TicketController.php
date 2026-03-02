@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Ticket;
 use App\Enum\TicketStatus;
+use App\Entity\User;
 use App\Form\TicketType;
 use App\Repository\TicketRepository;
 use App\Repository\UserRepository;
@@ -54,9 +55,16 @@ class TicketController extends AbstractController
     #[Route('/{id}', name: 'ticket_show', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function show(Ticket $ticket, UserRepository $userRepository): Response
     {
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+        $isAssigned  = $ticket->getAssignedTo()?->getId() === $currentUser->getId();
+        $canComment  = $ticket->getStatus() !== TicketStatus::CLOSED
+                       && ($this->isGranted('ROLE_TECH') || $isAssigned);
+
         return $this->render('ticket/show.html.twig', [
-            'ticket'   => $ticket,
-            'allUsers' => $userRepository->findAll(),
+            'ticket'     => $ticket,
+            'allUsers'   => $userRepository->findAll(),
+            'canComment' => $canComment,
         ]);
     }
 
@@ -130,6 +138,36 @@ class TicketController extends AbstractController
                 TicketStatus::CLOSED      => 'Fermé',
             },
         ]);
+    }
+
+    #[Route('/{id}/comment', name: 'ticket_comment', methods: ['POST'], requirements: ['id' => '\d+'])]
+    public function comment(Ticket $ticket, Request $request, TicketService $service): Response
+    {
+        if ($ticket->getStatus() === TicketStatus::CLOSED) {
+            $this->addFlash('error', 'Impossible de commenter un ticket fermé.');
+            return $this->redirectToRoute('ticket_show', ['id' => $ticket->getId()]);
+        }
+
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+        $isAssigned  = $ticket->getAssignedTo()?->getId() === $currentUser->getId();
+
+        if (!$this->isGranted('ROLE_TECH') && !$isAssigned) {
+            $this->addFlash('error', 'Vous n\'êtes pas autorisé à commenter ce ticket.');
+            return $this->redirectToRoute('ticket_show', ['id' => $ticket->getId()]);
+        }
+
+        $content = trim($request->request->getString('content'));
+
+        if ($content === '') {
+            $this->addFlash('error', 'Le commentaire ne peut pas être vide.');
+            return $this->redirectToRoute('ticket_show', ['id' => $ticket->getId()]);
+        }
+
+        $service->addComment($ticket, $currentUser, $content);
+        $this->addFlash('success', 'Commentaire ajouté.');
+
+        return $this->redirectToRoute('ticket_show', ['id' => $ticket->getId()]);
     }
 
     #[Route('/{id}/assign', name: 'ticket_assign', methods: ['POST'], requirements: ['id' => '\d+'])]
