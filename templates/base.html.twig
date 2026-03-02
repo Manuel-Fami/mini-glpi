@@ -34,6 +34,21 @@
         {% endif %}
 
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            {% for message in app.flashes('success') %}
+                <div data-controller="flash"
+                     data-flash-timeout-value="5000"
+                     class="mb-4 bg-green-500 text-white text-sm font-medium rounded-lg px-4 py-3">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+            {% for message in app.flashes('error') %}
+                <div class="mb-4 bg-red-500 text-white text-sm font-medium rounded-lg px-4 py-3">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
             {% block body %}{% endblock %}
         </main>
 
