@@ -13,43 +13,76 @@
     <body class="min-h-screen bg-gray-50 text-gray-900">
 
         {% if app.user %}
-        <nav class="bg-white border-b border-gray-200 shadow-sm">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-16">
-                    <a href="{{ path('ticket_list') }}" class="text-xl font-bold text-blue-600 tracking-tight">
-                        Mini GLPI
+
+        {# Navbar fixe en haut #}
+        <nav class="fixed top-0 left-0 right-0 z-20 bg-white border-b border-gray-200 shadow-sm h-16">
+            <div class="flex justify-between items-center h-full px-6">
+                <span class="text-xl font-bold text-blue-600 tracking-tight">Mini GLPI</span>
+                <div class="flex items-center gap-4">
+                    <span class="text-sm text-gray-500">{{ app.user.userIdentifier }}</span>
+                    <a href="{{ path('app_logout') }}"
+                       class="text-sm px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 transition">
+                        Déconnexion
                     </a>
-                    <div class="flex items-center gap-4">
-                        <span class="text-sm text-gray-500">
-                            {{ app.user.userIdentifier }}
-                        </span>
-                        <a href="{{ path('app_logout') }}"
-                           class="text-sm px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 transition">
-                            Déconnexion
-                        </a>
-                    </div>
                 </div>
             </div>
         </nav>
+
+        {# Sidebar gauche fixe #}
+        {% set currentRoute = app.request.attributes.get('_route') %}
+        <aside class="fixed left-0 top-16 w-56 h-[calc(100vh-4rem)] bg-white border-r border-gray-200 flex flex-col z-10">
+            <nav class="flex-1 p-3 space-y-1">
+
+                <a href="{{ path('ticket_list') }}"
+                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition
+                          {{ currentRoute starts with 'ticket' ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    Gestion de tickets
+                </a>
+
+                <a href="{{ path('app_docs') }}"
+                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition
+                          {{ currentRoute == 'app_docs' ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    Documentation
+                </a>
+
+            </nav>
+        </aside>
+
         {% endif %}
 
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {# Contenu principal #}
+        <main class="{{ app.user ? 'ml-56 pt-16' : '' }}">
+            <div class="{{ app.user ? 'px-8 py-8' : '' }}">
 
-            {% for message in app.flashes('success') %}
-                <div data-controller="flash"
-                     data-flash-timeout-value="5000"
-                     class="mb-4 bg-green-500 text-white text-sm font-medium rounded-lg px-4 py-3">
-                    {{ message }}
-                </div>
-            {% endfor %}
+                {% if app.user %}
 
-            {% for message in app.flashes('error') %}
-                <div class="mb-4 bg-red-500 text-white text-sm font-medium rounded-lg px-4 py-3">
-                    {{ message }}
-                </div>
-            {% endfor %}
+                {% for message in app.flashes('success') %}
+                    <div data-controller="flash"
+                         data-flash-timeout-value="5000"
+                         class="mb-4 bg-green-500 text-white text-sm font-medium rounded-lg px-4 py-3">
+                        {{ message }}
+                    </div>
+                {% endfor %}
 
-            {% block body %}{% endblock %}
+                {% for message in app.flashes('error') %}
+                    <div class="mb-4 bg-red-500 text-white text-sm font-medium rounded-lg px-4 py-3">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                {% endif %}
+
+                {% block body %}{% endblock %}
+
+            </div>
         </main>
 
     </body>

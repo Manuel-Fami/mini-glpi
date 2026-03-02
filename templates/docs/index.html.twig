@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Documentation — Mini GLPI{% endblock %}
+
+{% block body %}
+
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">Documentation</h1>
+    <p class="text-sm text-gray-500 mt-1">Ressources et guides du projet Mini GLPI</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-2">Architecture</h2>
+        <p class="text-sm text-gray-500">Description de l'architecture du projet, des couches Controller / Service / Entity et des choix techniques.</p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-2">Authentification</h2>
+        <p class="text-sm text-gray-500">Fonctionnement du système de connexion, des rôles ROLE_USER / ROLE_TECH et de la sécurité Symfony.</p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-2">Gestion des tickets</h2>
+        <p class="text-sm text-gray-500">Cycle de vie d'un ticket : création, prise en charge, assignation et fermeture. Statuts et priorités disponibles.</p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-2">Tests</h2>
+        <p class="text-sm text-gray-500">Stratégie de tests : tests unitaires sur le service et tests fonctionnels sur les contrôleurs avec PHPUnit.</p>
+    </div>
+
+</div>
+
+{% endblock %}
