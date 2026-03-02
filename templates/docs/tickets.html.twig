@@ -7,26 +7,57 @@
 <div class="mb-6">
     <a href="{{ path('app_docs') }}" class="text-sm text-gray-500 hover:text-gray-700">← Documentation</a>
     <h1 class="text-2xl font-bold text-gray-900 mt-2">Gestion des tickets</h1>
+    <p class="text-sm text-gray-500 mt-1">Cycle de vie, assignation, commentaires et interactions AJAX</p>
 </div>
 
 <div class="space-y-6 max-w-3xl">
 
+    {# ---------------------------------------------------------------- #}
+    {# Cycle de vie #}
+    {# ---------------------------------------------------------------- #}
+
     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
         <h2 class="text-base font-semibold text-gray-800 mb-4">Cycle de vie d'un ticket</h2>
-        <div class="flex items-center gap-3 text-sm flex-wrap">
+
+        <div class="flex items-center gap-2 text-sm flex-wrap mb-5">
             <span class="inline-flex px-3 py-1.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">Ouvert</span>
             <span class="text-gray-400 font-bold">→</span>
             <span class="inline-flex px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">En cours</span>
             <span class="text-gray-400 font-bold">→</span>
             <span class="inline-flex px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">Fermé</span>
+            <span class="text-gray-400 font-bold text-xs ml-1">(ROLE_TECH)</span>
+            <span class="text-gray-400 font-bold">→</span>
+            <span class="inline-flex px-3 py-1.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">Ouvert</span>
         </div>
-        <ul class="mt-4 space-y-2 text-sm text-gray-600">
-            <li class="flex gap-2"><span class="text-yellow-500 font-bold">→</span> Un ticket est créé avec le statut <strong>Ouvert</strong></li>
-            <li class="flex gap-2"><span class="text-blue-500 font-bold">→</span> Un technicien démarre la prise en charge : statut passe à <strong>En cours</strong></li>
-            <li class="flex gap-2"><span class="text-gray-500 font-bold">→</span> Le ticket est résolu et <strong>Fermé</strong> — aucune modification n'est plus possible</li>
-        </ul>
-        <p class="text-xs text-gray-400 mt-3">Les transitions sont validées dans <code class="bg-gray-100 px-1 rounded">TicketService</code> qui lève une <code class="bg-gray-100 px-1 rounded">LogicException</code> si la transition est invalide.</p>
+
+        <div class="space-y-2 text-sm text-gray-600">
+            <div class="flex gap-3 p-2.5 bg-yellow-50 rounded-lg">
+                <span class="text-yellow-600 font-bold mt-0.5">1</span>
+                <div>Un ticket est créé avec le statut <strong>Ouvert</strong>. Tout utilisateur connecté peut en créer.</div>
+            </div>
+            <div class="flex gap-3 p-2.5 bg-blue-50 rounded-lg">
+                <span class="text-blue-600 font-bold mt-0.5">2</span>
+                <div>La prise en charge est démarrée : statut passe à <strong>En cours</strong>. Déclenché par le bouton "Démarrer la prise en charge".</div>
+            </div>
+            <div class="flex gap-3 p-2.5 bg-gray-50 rounded-lg">
+                <span class="text-gray-500 font-bold mt-0.5">3</span>
+                <div>Le ticket est <strong>Fermé</strong> après résolution. Une modale de confirmation est demandée. Aucune modification ni commentaire n'est plus possible.</div>
+            </div>
+            <div class="flex gap-3 p-2.5 bg-yellow-50 rounded-lg">
+                <span class="text-yellow-600 font-bold mt-0.5">4</span>
+                <div>Un <strong>ROLE_TECH</strong> peut <strong>réouvrir</strong> un ticket fermé (avec confirmation). Le ticket repasse à <strong>Ouvert</strong>.</div>
+            </div>
+        </div>
+
+        <p class="text-xs text-gray-400 mt-4">
+            Les transitions sont validées dans <code class="bg-gray-100 px-1 rounded">TicketService</code> qui lève une
+            <code class="bg-gray-100 px-1 rounded">LogicException</code> si la transition est invalide.
+        </p>
     </div>
+
+    {# ---------------------------------------------------------------- #}
+    {# Priorités #}
+    {# ---------------------------------------------------------------- #}
 
     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
         <h2 class="text-base font-semibold text-gray-800 mb-4">Priorités</h2>
@@ -50,6 +81,71 @@
         </div>
     </div>
 
+    {# ---------------------------------------------------------------- #}
+    {# Assignation #}
+    {# ---------------------------------------------------------------- #}
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-4">Assignation</h2>
+        <p class="text-sm text-gray-600 mb-4">
+            Les règles d'assignation diffèrent selon le rôle de l'utilisateur connecté.
+            L'assignation est bloquée sur les tickets fermés.
+        </p>
+        <div class="space-y-3">
+            <div class="p-3 bg-gray-50 rounded-lg text-sm">
+                <p class="font-semibold text-gray-700 mb-1">ROLE_USER</p>
+                <ul class="space-y-1 text-gray-600 text-xs">
+                    <li>✓ Peut <strong>s'auto-assigner</strong> n'importe quel ticket non assigné</li>
+                    <li>✗ Ne peut pas s'assigner un ticket déjà assigné</li>
+                    <li>✗ Ne peut pas assigner à quelqu'un d'autre</li>
+                </ul>
+            </div>
+            <div class="p-3 bg-blue-50 rounded-lg text-sm">
+                <p class="font-semibold text-blue-700 mb-1">ROLE_TECH</p>
+                <ul class="space-y-1 text-blue-700 text-xs">
+                    <li>✓ Peut assigner n'importe quel ticket à n'importe quel utilisateur</li>
+                    <li>✓ Peut <strong>réassigner</strong> un ticket déjà assigné</li>
+                    <li>✓ Dispose d'une liste déroulante avec tous les utilisateurs</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {# ---------------------------------------------------------------- #}
+    {# Commentaires #}
+    {# ---------------------------------------------------------------- #}
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-4">Commentaires</h2>
+        <p class="text-sm text-gray-600 mb-4">
+            Les commentaires sont disponibles sur tous les tickets <strong>non fermés</strong>.
+            Chaque commentaire affiche l'initiale de l'auteur, son identifiant et la date de publication.
+        </p>
+        <div class="space-y-3">
+            <div class="p-3 bg-gray-50 rounded-lg text-sm">
+                <p class="font-semibold text-gray-700 mb-1">Qui peut commenter ?</p>
+                <ul class="space-y-1 text-gray-600 text-xs">
+                    <li>✓ <strong>ROLE_TECH</strong> — peut commenter n'importe quel ticket ouvert ou en cours</li>
+                    <li>✓ <strong>ROLE_USER assigné</strong> au ticket — peut commenter son propre ticket</li>
+                    <li>✗ <strong>ROLE_USER non assigné</strong> — accès refusé avec message d'erreur</li>
+                    <li>✗ Ticket <strong>fermé</strong> — commentaire impossible pour tous</li>
+                </ul>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-lg text-sm">
+                <p class="font-semibold text-gray-700 mb-1">Stockage</p>
+                <p class="text-gray-600 text-xs">
+                    Entité <code class="bg-white px-1 rounded border border-gray-200">Comment</code> liée au ticket
+                    (suppression en cascade) et à l'auteur.
+                    La liste est triée par <code class="bg-white px-1 rounded border border-gray-200">createdAt ASC</code>.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {# ---------------------------------------------------------------- #}
+    {# Routes #}
+    {# ---------------------------------------------------------------- #}
+
     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
         <h2 class="text-base font-semibold text-gray-800 mb-4">Routes disponibles</h2>
         <div class="space-y-2 text-xs font-mono">
@@ -71,32 +167,55 @@
             <div class="grid grid-cols-12 gap-2 p-2.5 bg-gray-50 rounded-lg items-center">
                 <span class="col-span-2 text-green-600 font-semibold">GET/POST</span>
                 <span class="col-span-4 text-gray-700">/tickets/{id}/edit</span>
-                <span class="col-span-6 text-gray-500 font-sans">Modifier un ticket</span>
+                <span class="col-span-6 text-gray-500 font-sans">Modifier un ticket (bloqué si fermé)</span>
             </div>
             <div class="grid grid-cols-12 gap-2 p-2.5 bg-gray-50 rounded-lg items-center">
                 <span class="col-span-2 text-orange-600 font-semibold">POST</span>
                 <span class="col-span-4 text-gray-700">/tickets/{id}/status</span>
-                <span class="col-span-6 text-gray-500 font-sans">Changer le statut (AJAX JSON)</span>
+                <span class="col-span-6 text-gray-500 font-sans">Changer le statut — réponse JSON (AJAX)</span>
             </div>
             <div class="grid grid-cols-12 gap-2 p-2.5 bg-gray-50 rounded-lg items-center">
                 <span class="col-span-2 text-orange-600 font-semibold">POST</span>
                 <span class="col-span-4 text-gray-700">/tickets/{id}/assign</span>
-                <span class="col-span-6 text-gray-500 font-sans">Assigner (ROLE_TECH uniquement)</span>
+                <span class="col-span-6 text-gray-500 font-sans">Assigner / s'auto-assigner</span>
+            </div>
+            <div class="grid grid-cols-12 gap-2 p-2.5 bg-gray-50 rounded-lg items-center">
+                <span class="col-span-2 text-orange-600 font-semibold">POST</span>
+                <span class="col-span-4 text-gray-700">/tickets/{id}/comment</span>
+                <span class="col-span-6 text-gray-500 font-sans">Poster un commentaire</span>
             </div>
         </div>
     </div>
 
+    {# ---------------------------------------------------------------- #}
+    {# Stimulus AJAX #}
+    {# ---------------------------------------------------------------- #}
+
     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-        <h2 class="text-base font-semibold text-gray-800 mb-3">Changement de statut AJAX</h2>
-        <p class="text-sm text-gray-600">
-            Sur la page de détail, les boutons <strong>Démarrer</strong> et <strong>Fermer</strong> utilisent le contrôleur Stimulus
-            <code class="bg-gray-100 px-1 rounded text-xs">status_controller.js</code> pour envoyer une requête
-            <code class="bg-gray-100 px-1 rounded text-xs">POST /tickets/{id}/status</code> sans rechargement de page.
-            Le badge de statut et les boutons sont mis à jour dynamiquement selon la réponse JSON.
+        <h2 class="text-base font-semibold text-gray-800 mb-3">Contrôleur Stimulus — changement de statut</h2>
+        <p class="text-sm text-gray-600 mb-4">
+            Le contrôleur <code class="bg-gray-100 px-1 rounded text-xs">status_controller.js</code> gère les interactions
+            de la page de détail sans rechargement de page.
         </p>
-        <p class="text-sm text-gray-600 mt-2">
-            Un token CSRF est inclus dans chaque requête pour sécuriser l'endpoint.
-        </p>
+
+        <div class="space-y-3 text-sm">
+            <div class="p-3 bg-gray-50 rounded-lg">
+                <p class="font-semibold text-gray-700 text-xs mb-1">Bouton "Démarrer la prise en charge"</p>
+                <p class="text-gray-600 text-xs">Visible uniquement si statut <strong>OPEN</strong>. Envoie <code class="bg-white px-1 rounded border border-gray-200">status=in_progress</code> → badge et boutons mis à jour dynamiquement.</p>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-lg">
+                <p class="font-semibold text-gray-700 text-xs mb-1">Bouton "Fermer" — avec modale de confirmation</p>
+                <p class="text-gray-600 text-xs">Visible si statut ≠ <strong>CLOSED</strong>. Affiche une modale "Êtes-vous sûr ?" avant d'envoyer <code class="bg-white px-1 rounded border border-gray-200">status=closed</code>.</p>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-lg">
+                <p class="font-semibold text-gray-700 text-xs mb-1">Bouton "Réouvrir" — ROLE_TECH uniquement — avec modale</p>
+                <p class="text-gray-600 text-xs">Visible uniquement si statut <strong>CLOSED</strong>. Réservé à <strong>ROLE_TECH</strong>. Affiche une modale de confirmation avant d'envoyer <code class="bg-white px-1 rounded border border-gray-200">status=open</code>.</p>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-lg">
+                <p class="font-semibold text-gray-700 text-xs mb-1">Sécurité</p>
+                <p class="text-gray-600 text-xs">Chaque requête AJAX inclut un token CSRF (<code class="bg-white px-1 rounded border border-gray-200">ticket_status_{id}</code>) vérifié côté serveur avant traitement.</p>
+            </div>
+        </div>
     </div>
 
 </div>

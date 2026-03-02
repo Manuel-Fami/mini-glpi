@@ -38,4 +38,10 @@ class DocsController extends AbstractController
     {
         return $this->render('docs/tests.html.twig');
     }
+
+    #[Route('/cypress', name: 'app_docs_cypress', methods: ['GET'])]
+    public function cypress(): Response
+    {
+        return $this->render('docs/cypress.html.twig');
+    }
 }
