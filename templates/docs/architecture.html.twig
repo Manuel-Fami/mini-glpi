@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Architecture — Documentation — Mini GLPI{% endblock %}
+
+{% block body %}
+
+<div class="mb-6">
+    <a href="{{ path('app_docs') }}" class="text-sm text-gray-500 hover:text-gray-700">← Documentation</a>
+    <h1 class="text-2xl font-bold text-gray-900 mt-2">Architecture</h1>
+</div>
+
+<div class="space-y-6 max-w-3xl">
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-4">Stack technique</h2>
+        <div class="grid grid-cols-2 gap-3 text-sm">
+            <div class="flex justify-between py-1.5 border-b border-gray-100">
+                <span class="text-gray-500">Langage</span>
+                <span class="font-medium text-gray-800">PHP 8.4</span>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-gray-100">
+                <span class="text-gray-500">Framework</span>
+                <span class="font-medium text-gray-800">Symfony 8</span>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-gray-100">
+                <span class="text-gray-500">ORM</span>
+                <span class="font-medium text-gray-800">Doctrine 3.6</span>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-gray-100">
+                <span class="text-gray-500">Base de données</span>
+                <span class="font-medium text-gray-800">MySQL 8.0</span>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-gray-100">
+                <span class="text-gray-500">Templates</span>
+                <span class="font-medium text-gray-800">Twig</span>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-gray-100">
+                <span class="text-gray-500">CSS</span>
+                <span class="font-medium text-gray-800">Tailwind CSS v4</span>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-gray-100">
+                <span class="text-gray-500">JS</span>
+                <span class="font-medium text-gray-800">Stimulus / Turbo</span>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-gray-100">
+                <span class="text-gray-500">Tests</span>
+                <span class="font-medium text-gray-800">PHPUnit 13</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-4">Séparation en couches</h2>
+        <div class="space-y-4 text-sm">
+            <div class="flex gap-4 p-3 bg-gray-50 rounded-lg">
+                <span class="font-mono text-blue-600 font-semibold w-28 shrink-0">Controller/</span>
+                <span class="text-gray-600">Gère les requêtes HTTP, valide les formulaires, appelle les services et renvoie les réponses. Ne contient aucune logique métier.</span>
+            </div>
+            <div class="flex gap-4 p-3 bg-gray-50 rounded-lg">
+                <span class="font-mono text-blue-600 font-semibold w-28 shrink-0">Service/</span>
+                <span class="text-gray-600">Concentre toute la logique métier (création, transitions de statut, assignation). Lance des <code class="bg-white px-1 rounded border border-gray-200">LogicException</code> en cas de violation de règle.</span>
+            </div>
+            <div class="flex gap-4 p-3 bg-gray-50 rounded-lg">
+                <span class="font-mono text-blue-600 font-semibold w-28 shrink-0">Entity/</span>
+                <span class="text-gray-600">Définit les structures de données et les contraintes de validation via attributs PHP. Mappées sur la base de données par Doctrine.</span>
+            </div>
+            <div class="flex gap-4 p-3 bg-gray-50 rounded-lg">
+                <span class="font-mono text-blue-600 font-semibold w-28 shrink-0">Repository/</span>
+                <span class="text-gray-600">Couche d'accès aux données. Étend <code class="bg-white px-1 rounded border border-gray-200">ServiceEntityRepository</code> de Doctrine pour les requêtes personnalisées.</span>
+            </div>
+            <div class="flex gap-4 p-3 bg-gray-50 rounded-lg">
+                <span class="font-mono text-blue-600 font-semibold w-28 shrink-0">Form/</span>
+                <span class="text-gray-600">Définit les formulaires réutilisables via <code class="bg-white px-1 rounded border border-gray-200">AbstractType</code>. Associés aux entités via <code class="bg-white px-1 rounded border border-gray-200">data_class</code>.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-4">Patterns utilisés</h2>
+        <ul class="space-y-2 text-sm text-gray-600">
+            <li class="flex gap-2"><span class="text-blue-500 font-bold">→</span><span><strong class="text-gray-800">MVC</strong> — Controllers, vues Twig, modèles Doctrine</span></li>
+            <li class="flex gap-2"><span class="text-blue-500 font-bold">→</span><span><strong class="text-gray-800">Service Layer</strong> — logique métier isolée du HTTP</span></li>
+            <li class="flex gap-2"><span class="text-blue-500 font-bold">→</span><span><strong class="text-gray-800">Repository Pattern</strong> — abstraction de l'accès aux données</span></li>
+            <li class="flex gap-2"><span class="text-blue-500 font-bold">→</span><span><strong class="text-gray-800">Dependency Injection</strong> — injection par constructeur partout</span></li>
+            <li class="flex gap-2"><span class="text-blue-500 font-bold">→</span><span><strong class="text-gray-800">Enum PHP 8.1+</strong> — statuts typés sans magic strings (<code class="bg-gray-100 px-1 rounded">TicketStatus</code>)</span></li>
+            <li class="flex gap-2"><span class="text-blue-500 font-bold">→</span><span><strong class="text-gray-800">Unit of Work</strong> — gestion des transactions par Doctrine</span></li>
+        </ul>
+    </div>
+
+</div>
+
+{% endblock %}

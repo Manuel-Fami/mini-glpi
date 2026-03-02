@@ -38,10 +38,6 @@ class TicketService
 
     public function assign(Ticket $ticket, User $user): void
     {
-        if ($ticket->getAssignedTo() !== null) {
-            throw new \LogicException('Ticket already assigned.');
-        }
-
         $ticket->setAssignedTo($user);
         $this->em->flush();
     }

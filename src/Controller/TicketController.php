@@ -55,8 +55,8 @@ class TicketController extends AbstractController
     public function show(Ticket $ticket, UserRepository $userRepository): Response
     {
         return $this->render('ticket/show.html.twig', [
-            'ticket' => $ticket,
-            'techs'  => $userRepository->findByRole('ROLE_TECH'),
+            'ticket'   => $ticket,
+            'allUsers' => $userRepository->findAll(),
         ]);
     }
 
@@ -130,21 +130,33 @@ class TicketController extends AbstractController
     #[Route('/{id}/assign', name: 'ticket_assign', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function assign(Ticket $ticket, Request $request, TicketService $service, UserRepository $userRepository): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_TECH');
-
-        $userId = $request->request->getInt('user_id');
-        $user   = $userRepository->find($userId);
-
-        if (!$user) {
-            $this->addFlash('error', 'Utilisateur introuvable.');
+        if ($ticket->getStatus() === TicketStatus::CLOSED) {
+            $this->addFlash('error', 'Impossible d\'assigner un ticket fermé.');
             return $this->redirectToRoute('ticket_show', ['id' => $ticket->getId()]);
         }
 
-        try {
+        /** @var \App\Entity\User $currentUser */
+        $currentUser = $this->getUser();
+
+        if ($this->isGranted('ROLE_TECH')) {
+            $userId = $request->request->getInt('user_id');
+            $user   = $userRepository->find($userId);
+
+            if (!$user) {
+                $this->addFlash('error', 'Utilisateur introuvable.');
+                return $this->redirectToRoute('ticket_show', ['id' => $ticket->getId()]);
+            }
+
             $service->assign($ticket, $user);
             $this->addFlash('success', 'Ticket assigné à ' . $user->getUserIdentifier() . '.');
-        } catch (\LogicException $e) {
-            $this->addFlash('error', $e->getMessage());
+        } else {
+            if ($ticket->getAssignedTo() !== null) {
+                $this->addFlash('error', 'Ce ticket est déjà assigné.');
+                return $this->redirectToRoute('ticket_show', ['id' => $ticket->getId()]);
+            }
+
+            $service->assign($ticket, $currentUser);
+            $this->addFlash('success', 'Ticket assigné à vous.');
         }
 
         return $this->redirectToRoute('ticket_show', ['id' => $ticket->getId()]);

@@ -11,25 +11,69 @@
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-        <h2 class="text-base font-semibold text-gray-800 mb-2">Architecture</h2>
-        <p class="text-sm text-gray-500">Description de l'architecture du projet, des couches Controller / Service / Entity et des choix techniques.</p>
-    </div>
+    <a href="{{ path('app_docs_architecture') }}"
+       class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:border-blue-300 hover:shadow-md transition group">
+        <div class="flex items-start gap-4">
+            <div class="p-2 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+            </div>
+            <div>
+                <h2 class="text-base font-semibold text-gray-800 group-hover:text-blue-700 transition">Architecture</h2>
+                <p class="text-sm text-gray-500 mt-1">Stack technique, structure des couches Controller / Service / Entity et patterns utilisés.</p>
+            </div>
+        </div>
+    </a>
 
-    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-        <h2 class="text-base font-semibold text-gray-800 mb-2">Authentification</h2>
-        <p class="text-sm text-gray-500">Fonctionnement du système de connexion, des rôles ROLE_USER / ROLE_TECH et de la sécurité Symfony.</p>
-    </div>
+    <a href="{{ path('app_docs_authentification') }}"
+       class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:border-blue-300 hover:shadow-md transition group">
+        <div class="flex items-start gap-4">
+            <div class="p-2 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+            </div>
+            <div>
+                <h2 class="text-base font-semibold text-gray-800 group-hover:text-blue-700 transition">Authentification</h2>
+                <p class="text-sm text-gray-500 mt-1">Système de connexion Symfony, rôles ROLE_USER / ROLE_TECH et configuration de la sécurité.</p>
+            </div>
+        </div>
+    </a>
 
-    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-        <h2 class="text-base font-semibold text-gray-800 mb-2">Gestion des tickets</h2>
-        <p class="text-sm text-gray-500">Cycle de vie d'un ticket : création, prise en charge, assignation et fermeture. Statuts et priorités disponibles.</p>
-    </div>
+    <a href="{{ path('app_docs_tickets') }}"
+       class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:border-blue-300 hover:shadow-md transition group">
+        <div class="flex items-start gap-4">
+            <div class="p-2 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+            </div>
+            <div>
+                <h2 class="text-base font-semibold text-gray-800 group-hover:text-blue-700 transition">Gestion des tickets</h2>
+                <p class="text-sm text-gray-500 mt-1">Cycle de vie, statuts, priorités, routes disponibles et interactions AJAX via Stimulus.</p>
+            </div>
+        </div>
+    </a>
 
-    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-        <h2 class="text-base font-semibold text-gray-800 mb-2">Tests</h2>
-        <p class="text-sm text-gray-500">Stratégie de tests : tests unitaires sur le service et tests fonctionnels sur les contrôleurs avec PHPUnit.</p>
-    </div>
+    <a href="{{ path('app_docs_tests') }}"
+       class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:border-blue-300 hover:shadow-md transition group">
+        <div class="flex items-start gap-4">
+            <div class="p-2 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <h2 class="text-base font-semibold text-gray-800 group-hover:text-blue-700 transition">Tests</h2>
+                <p class="text-sm text-gray-500 mt-1">Stratégie de tests unitaires et fonctionnels avec PHPUnit, fixtures et commandes.</p>
+            </div>
+        </div>
+    </a>
 
 </div>
 

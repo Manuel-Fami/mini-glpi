@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des tickets — Documentation — Mini GLPI{% endblock %}
+
+{% block body %}
+
+<div class="mb-6">
+    <a href="{{ path('app_docs') }}" class="text-sm text-gray-500 hover:text-gray-700">← Documentation</a>
+    <h1 class="text-2xl font-bold text-gray-900 mt-2">Gestion des tickets</h1>
+</div>
+
+<div class="space-y-6 max-w-3xl">
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-4">Cycle de vie d'un ticket</h2>
+        <div class="flex items-center gap-3 text-sm flex-wrap">
+            <span class="inline-flex px-3 py-1.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">Ouvert</span>
+            <span class="text-gray-400 font-bold">→</span>
+            <span class="inline-flex px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">En cours</span>
+            <span class="text-gray-400 font-bold">→</span>
+            <span class="inline-flex px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">Fermé</span>
+        </div>
+        <ul class="mt-4 space-y-2 text-sm text-gray-600">
+            <li class="flex gap-2"><span class="text-yellow-500 font-bold">→</span> Un ticket est créé avec le statut <strong>Ouvert</strong></li>
+            <li class="flex gap-2"><span class="text-blue-500 font-bold">→</span> Un technicien démarre la prise en charge : statut passe à <strong>En cours</strong></li>
+            <li class="flex gap-2"><span class="text-gray-500 font-bold">→</span> Le ticket est résolu et <strong>Fermé</strong> — aucune modification n'est plus possible</li>
+        </ul>
+        <p class="text-xs text-gray-400 mt-3">Les transitions sont validées dans <code class="bg-gray-100 px-1 rounded">TicketService</code> qui lève une <code class="bg-gray-100 px-1 rounded">LogicException</code> si la transition est invalide.</p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-4">Priorités</h2>
+        <div class="space-y-2 text-sm">
+            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                <span class="font-mono text-xs text-gray-500">LOW</span>
+                <span class="text-gray-500">Basse</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                <span class="font-mono text-xs text-gray-500">MEDIUM</span>
+                <span class="text-yellow-600 font-medium">Moyenne</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                <span class="font-mono text-xs text-gray-500">HIGH</span>
+                <span class="text-orange-500 font-semibold">Haute</span>
+            </div>
+            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                <span class="font-mono text-xs text-gray-500">CRITICAL</span>
+                <span class="text-red-600 font-semibold">Critique</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-4">Routes disponibles</h2>
+        <div class="space-y-2 text-xs font-mono">
+            <div class="grid grid-cols-12 gap-2 p-2.5 bg-gray-50 rounded-lg items-center">
+                <span class="col-span-2 text-blue-600 font-semibold">GET</span>
+                <span class="col-span-4 text-gray-700">/tickets</span>
+                <span class="col-span-6 text-gray-500 font-sans">Liste des tickets</span>
+            </div>
+            <div class="grid grid-cols-12 gap-2 p-2.5 bg-gray-50 rounded-lg items-center">
+                <span class="col-span-2 text-green-600 font-semibold">GET/POST</span>
+                <span class="col-span-4 text-gray-700">/tickets/new</span>
+                <span class="col-span-6 text-gray-500 font-sans">Créer un ticket</span>
+            </div>
+            <div class="grid grid-cols-12 gap-2 p-2.5 bg-gray-50 rounded-lg items-center">
+                <span class="col-span-2 text-blue-600 font-semibold">GET</span>
+                <span class="col-span-4 text-gray-700">/tickets/{id}</span>
+                <span class="col-span-6 text-gray-500 font-sans">Détail d'un ticket</span>
+            </div>
+            <div class="grid grid-cols-12 gap-2 p-2.5 bg-gray-50 rounded-lg items-center">
+                <span class="col-span-2 text-green-600 font-semibold">GET/POST</span>
+                <span class="col-span-4 text-gray-700">/tickets/{id}/edit</span>
+                <span class="col-span-6 text-gray-500 font-sans">Modifier un ticket</span>
+            </div>
+            <div class="grid grid-cols-12 gap-2 p-2.5 bg-gray-50 rounded-lg items-center">
+                <span class="col-span-2 text-orange-600 font-semibold">POST</span>
+                <span class="col-span-4 text-gray-700">/tickets/{id}/status</span>
+                <span class="col-span-6 text-gray-500 font-sans">Changer le statut (AJAX JSON)</span>
+            </div>
+            <div class="grid grid-cols-12 gap-2 p-2.5 bg-gray-50 rounded-lg items-center">
+                <span class="col-span-2 text-orange-600 font-semibold">POST</span>
+                <span class="col-span-4 text-gray-700">/tickets/{id}/assign</span>
+                <span class="col-span-6 text-gray-500 font-sans">Assigner (ROLE_TECH uniquement)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 class="text-base font-semibold text-gray-800 mb-3">Changement de statut AJAX</h2>
+        <p class="text-sm text-gray-600">
+            Sur la page de détail, les boutons <strong>Démarrer</strong> et <strong>Fermer</strong> utilisent le contrôleur Stimulus
+            <code class="bg-gray-100 px-1 rounded text-xs">status_controller.js</code> pour envoyer une requête
+            <code class="bg-gray-100 px-1 rounded text-xs">POST /tickets/{id}/status</code> sans rechargement de page.
+            Le badge de statut et les boutons sont mis à jour dynamiquement selon la réponse JSON.
+        </p>
+        <p class="text-sm text-gray-600 mt-2">
+            Un token CSRF est inclus dans chaque requête pour sécuriser l'endpoint.
+        </p>
+    </div>
+
+</div>
+
+{% endblock %}
