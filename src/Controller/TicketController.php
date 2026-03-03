@@ -18,6 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/tickets')]
 class TicketController extends AbstractController
 {
+    /** Affiche la liste de tous les tickets récupérés depuis la BDD. */
     #[Route('', name: 'ticket_list', methods: ['GET'])]
     public function list(TicketRepository $repository): Response
     {
@@ -26,11 +27,15 @@ class TicketController extends AbstractController
         ]);
     }
 
+    /**
+     * Affiche le formulaire de création (GET) et le traite à la soumission (POST).
+     * Délègue la persistance au TicketService. L'auteur est l'utilisateur connecté.
+     */
     #[Route('/new', name: 'ticket_new', methods: ['GET', 'POST'])]
     public function new(Request $request, TicketService $service): Response
     {
         $ticket = new Ticket();
-        $form   = $this->createForm(TicketType::class, $ticket);
+        $form = $this->createForm(TicketType::class, $ticket);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -52,6 +57,11 @@ class TicketController extends AbstractController
         ]);
     }
 
+    /**
+     * Affiche le détail d'un ticket avec ses commentaires.
+     * Le ParamConverter Doctrine résout automatiquement {id} en objet Ticket (404 si introuvable).
+     * Calcule les droits de commentaire : ticket ouvert ET (ROLE_TECH OU utilisateur assigné).
+     */
     #[Route('/{id}', name: 'ticket_show', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function show(Ticket $ticket, UserRepository $userRepository): Response
     {
@@ -68,6 +78,10 @@ class TicketController extends AbstractController
         ]);
     }
 
+    /**
+     * Affiche le formulaire de modification (GET) et le traite (POST).
+     * Bloque toute modification si le ticket est à l'état "closed".
+     */
     #[Route('/{id}/edit', name: 'ticket_edit', methods: ['GET', 'POST'], requirements: ['id' => '\d+'])]
     public function edit(Ticket $ticket, Request $request, TicketService $service): Response
     {
@@ -91,6 +105,11 @@ class TicketController extends AbstractController
         ]);
     }
 
+    /**
+     * Ferme un ticket via POST.
+     * Attrape les LogicException levées par le service (ex: ticket déjà fermé)
+     * et les affiche en flash message d'erreur.
+     */
     #[Route('/{id}/close', name: 'ticket_close', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function close(Ticket $ticket, TicketService $service): Response
     {
@@ -104,6 +123,11 @@ class TicketController extends AbstractController
         return $this->redirectToRoute('ticket_show', ['id' => $ticket->getId()]);
     }
 
+    /**
+     * Change le statut d'un ticket via une requête AJAX — retourne du JSON, pas du HTML.
+     * Vérifie le token CSRF manuellement (pas de formulaire Symfony ici).
+     * Seul ROLE_TECH peut rouvrir un ticket. Les transitions invalides lèvent une exception.
+     */
     #[Route('/{id}/status', name: 'ticket_status', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function updateStatus(Ticket $ticket, Request $request, TicketService $service): JsonResponse
     {
@@ -140,6 +164,10 @@ class TicketController extends AbstractController
         ]);
     }
 
+    /**
+     * Ajoute un commentaire à un ticket.
+     * Conditions : ticket non fermé ET utilisateur autorisé (ROLE_TECH ou assigné au ticket).
+     */
     #[Route('/{id}/comment', name: 'ticket_comment', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function comment(Ticket $ticket, Request $request, TicketService $service): Response
     {
@@ -170,6 +198,11 @@ class TicketController extends AbstractController
         return $this->redirectToRoute('ticket_show', ['id' => $ticket->getId()]);
     }
 
+    /**
+     * Assigne un ticket à un utilisateur.
+     * ROLE_TECH : peut assigner à n'importe quel utilisateur (choix via user_id).
+     * ROLE_USER : peut uniquement s'auto-assigner, et seulement si le ticket est libre.
+     */
     #[Route('/{id}/assign', name: 'ticket_assign', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function assign(Ticket $ticket, Request $request, TicketService $service, UserRepository $userRepository): Response
     {

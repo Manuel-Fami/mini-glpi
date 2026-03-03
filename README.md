@@ -38,6 +38,10 @@ OPEN  →  IN_PROGRESS  →  CLOSED
 
 ## Prérequis
 
+**Avec Docker (recommandé)**
+- Docker Desktop
+
+**Sans Docker**
 - PHP 8.4+
 - Composer
 - MySQL 8+
@@ -45,7 +49,36 @@ OPEN  →  IN_PROGRESS  →  CLOSED
 
 ---
 
-## Installation
+## Lancer avec Docker
+
+```bash
+# 1. Cloner le dépôt
+git clone <url-du-repo> mini-glpi
+cd mini-glpi
+
+# 2. Démarrer les conteneurs (build automatique au premier lancement)
+docker compose up --build
+
+# 3. Jouer les migrations
+docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction
+
+# 4. Charger les utilisateurs de test
+docker compose exec app php bin/console doctrine:fixtures:load --no-interaction
+```
+
+L'application est accessible sur **http://localhost:8000**
+
+```bash
+# Arrêter les conteneurs
+docker compose down
+
+# Arrêter et supprimer les données (⚠ efface la base de données)
+docker compose down -v
+```
+
+---
+
+## Installation sans Docker
 
 ```bash
 # 1. Cloner le dépôt
@@ -56,7 +89,6 @@ cd mini-glpi
 composer install
 
 # 3. Configurer la base de données
-# Copier .env et ajuster DATABASE_URL
 cp .env .env.local
 # Éditer DATABASE_URL dans .env.local
 

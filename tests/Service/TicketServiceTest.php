@@ -17,7 +17,7 @@ final class TicketServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->em      = $this->createMock(EntityManagerInterface::class);
+        $this->em = $this->createMock(EntityManagerInterface::class);
         $this->service = new TicketService($this->em);
     }
 
